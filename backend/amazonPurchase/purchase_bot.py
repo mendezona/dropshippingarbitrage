@@ -70,4 +70,3 @@ def login_to_amazon(username: str, password: str):
 
 if __name__ == "__main__":
     login_to_amazon("your_username_here", "your_password_here")
-    test = "test"
