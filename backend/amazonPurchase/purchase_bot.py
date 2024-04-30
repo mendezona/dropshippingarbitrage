@@ -1,7 +1,12 @@
 import random
 import time
 
-from purchase_bot_helpers import random_typing
+from purchase_bot_constants import AMAZON_PASSWORD, AMAZON_USERNAME
+from purchase_bot_helpers import (
+    find_and_solve_captcha,
+    get_chrome_binary,
+    random_typing,
+)
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -14,21 +19,27 @@ from webdriver_manager.chrome import ChromeDriverManager
 def login_to_amazon(username: str, password: str):
     # Set Chrome options and service
     options = Options()
-    options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"  # Path to Chrome on your machine
+    options.binary_location = get_chrome_binary()
     service = Service(ChromeDriverManager().install())
 
-    # Initialize the Chrome driver with options and service
+    # Initialise the Chrome driver with options and service
     driver = webdriver.Chrome(service=service, options=options)
     print("WebDriver initiated.")
 
     # Open the login page
     driver.get(
-        "https://www.amazon.com/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_custrec_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0"
+        "https://www.amazon.com/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_custrec_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0"  # noqa E501
     )
     print("Login page loaded.")
 
     # Wait for the page to load
-    time.sleep(random.uniform(1, 3))
+    time.sleep(random.uniform(1, 5))
+
+    # Wait a moment for any CAPTCHA to possibly appear
+    try:
+        find_and_solve_captcha(driver)
+    except Exception as e:
+        print(f"No CAPTCHA found or failed to solve CAPTCHA: {e}")
 
     # Input the email or phone number
     try:
@@ -45,6 +56,12 @@ def login_to_amazon(username: str, password: str):
     # Wait for the next page (password page)
     time.sleep(random.uniform(1, 3))
 
+    # Wait a moment for any CAPTCHA to possibly appear
+    try:
+        find_and_solve_captcha(driver)
+    except Exception as e:
+        print(f"No CAPTCHA found or failed to solve CAPTCHA: {e}")
+
     try:
         # Input the password
         password_input: WebElement = driver.find_element(
@@ -57,16 +74,46 @@ def login_to_amazon(username: str, password: str):
     except Exception as e:
         print(f"Failed to find or interact with the password input: {e}")
 
-    # Wait for possible CAPTCHA or further actions
-    time.sleep(5)
-    print("Waiting for any post-login processes to complete.")
+    # Wait for the next page (password page)
+    time.sleep(random.uniform(1, 3))
 
-    # Assume now logged in and do other actions, e.g., navigate to a product page
-    # ...
+    # Wait a moment for any CAPTCHA to possibly appear
+    try:
+        find_and_solve_captcha(driver)
+    except Exception as e:
+        print(f"No CAPTCHA found or failed to solve CAPTCHA: {e}")
 
-    # Close the browser when all tasks are completed
-    # driver.quit()
+    # INPUT OTP Code
+    try:
+        inputs = driver.find_elements(By.TAG_NAME, "input")
+
+        # Filter to find input with maxlength of 6
+        for input_field in inputs:
+            if input_field.get_attribute("maxlength") == "6":
+                print("Found an input field with maxlength 6.")
+                user_input = input(
+                    "Please enter the text you want to type (max 6 characters): "  # noqa E501
+                )
+                # Type the user's input into the field
+                random_typing(input_field, user_input)
+                random_typing(password_input, Keys.RETURN)
+                print("OTP Code sent")
+        else:
+            print("No input field with maxlength 6 found.")
+    except Exception as e:
+        print(f"Failed to find or interact with the password input: {e}")
+
+    # Wait a moment for any CAPTCHA to possibly appear
+    try:
+        find_and_solve_captcha(driver)
+    except Exception as e:
+        print(f"No CAPTCHA found or failed to solve CAPTCHA: {e}")
+
+    # TODO: Begin purchase logic here
+    time.sleep(120)
+
+    driver.quit()
 
 
 if __name__ == "__main__":
-    login_to_amazon("your_username_here", "your_password_here")
+    login_to_amazon(AMAZON_USERNAME, AMAZON_PASSWORD)
