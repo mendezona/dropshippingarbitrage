@@ -1,1 +1,1 @@
-export const projectName: string = 'Next gen dropshipping';
+export const PROJECT_NAME: string = 'Next gen dropshipping';

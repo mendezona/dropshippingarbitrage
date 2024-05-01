@@ -1,13 +1,13 @@
 import '@/app/globals.css';
-import { projectName } from '@/components/constants';
+import { PROJECT_NAME } from '@/components/constants';
 import { figtree } from '@/components/fonts';
 import { cn } from '@/lib/utils';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: `%s |${projectName}`,
-    default: `${projectName}`,
+    template: `%s |${PROJECT_NAME}`,
+    default: `${PROJECT_NAME}`,
   },
   description: 'Next generation automated dropshipping',
 };
