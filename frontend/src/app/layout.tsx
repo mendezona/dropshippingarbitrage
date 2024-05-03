@@ -1,6 +1,7 @@
 import '@/app/globals.css';
 import { PROJECT_NAME } from '@/components/constants';
 import { figtree } from '@/components/fonts';
+import { ThemeProvider } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
 import { Metadata } from 'next';
 
@@ -25,7 +26,14 @@ export default function RootLayout({
           figtree.variable
         )}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

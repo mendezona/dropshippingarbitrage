@@ -56,6 +56,8 @@ const config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        discord: '#404eed',
+        discordHover: '#5757a9',
       },
       borderRadius: {
         lg: 'var(--radius)',
