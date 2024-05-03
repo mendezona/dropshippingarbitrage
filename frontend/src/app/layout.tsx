@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: `%s |${PROJECT_NAME}`,
     default: `${PROJECT_NAME}`,
   },
-  description: 'Next generation automated dropshipping',
+  description: 'Seamlessly Connect, Effortlessly Shop',
 };
 
 export default function RootLayout({
